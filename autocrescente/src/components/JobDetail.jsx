@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowLeft, MapPin, Briefcase } from 'lucide-react'
 import ApplicationForm from './ApplicationForm'
-
+import INDUSTRY_HEADERS from '../helper';
 export default function JobDetail({ job, onBack }) {
   const [showForm, setShowForm] = useState(false)
 
@@ -9,8 +9,12 @@ export default function JobDetail({ job, onBack }) {
     <div className="min-h-screen bg-white">
       {showForm && <ApplicationForm job={job} onClose={() => setShowForm(false)} />}
 
-      <div className="relative h-72 sm:h-[520px] overflow-hidden">
-        <img src={job.image} alt={job.title} className="w-full h-full object-cover" />
+      <div className="relative h-72 sm:h-[520px] overflow-hidden bg-[#001970]">
+       
+
+        {(INDUSTRY_HEADERS[job.area] || INDUSTRY_HEADERS["Outro"]) && (
+          <img src={INDUSTRY_HEADERS[job.area] || INDUSTRY_HEADERS["Outro"]} alt={job.title} className="w-full h-full object-cover" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
 
         <div className="absolute top-6 sm:top-20 inset-x-0 px-6 z-10">
@@ -52,9 +56,18 @@ export default function JobDetail({ job, onBack }) {
 
       <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-3 gap-12">
         <div className="md:col-span-2 space-y-10">
-          <Section title="Responsabilidades" items={job.responsibilities} />
-          <Section title="Requisitos" items={job.requirements} />
-          <Section title="Oferecemos" items={job.benefits} />
+          {job.corpo ? (
+            <div
+              className="corpo-content"
+              dangerouslySetInnerHTML={{ __html: job.corpo }}
+            />
+          ) : (
+            <>
+              <Section title="Responsabilidades" items={job.responsibilities} />
+              <Section title="Requisitos" items={job.requirements} />
+              <Section title="Oferecemos" items={job.benefits} />
+            </>
+          )}
         </div>
 
         <div>
@@ -75,6 +88,7 @@ export default function JobDetail({ job, onBack }) {
 }
 
 function Section({ title, items }) {
+  if (!items?.length) return null
   return (
     <div>
       <h2 className="text-xl font-bold text-[#1A3A8C] mb-5">{title}</h2>

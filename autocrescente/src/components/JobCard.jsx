@@ -8,12 +8,18 @@ export default function JobCard({ job, onClick }) {
     >
 
       {/* Image */}
-      <div className="h-40 sm:h-auto sm:w-64 flex-shrink-0 overflow-hidden relative">
-        <img
-          src={job.image}
-          alt={job.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+      <div className="h-40 sm:h-auto sm:w-64 flex-shrink-0 overflow-hidden relative bg-gray-100 flex items-center justify-center">
+        {job.image ? (
+          <img
+            src={job.image}
+            alt={job.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5M21 3.75H3A.75.75 0 002.25 4.5v15a.75.75 0 00.75.75h18a.75.75 0 00.75-.75v-15A.75.75 0 0021 3.75z" />
+          </svg>
+        )}
         <div className="hidden sm:block absolute inset-y-0 right-0 w-8 bg-gradient-to-r from-transparent to-white" />
       </div>
 
