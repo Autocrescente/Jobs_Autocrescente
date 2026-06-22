@@ -7,11 +7,52 @@ export default function ApplicationForm({ job, onClose }) {
     birthDate: '', education: '', experience: '', languages: '', itSkills: '', recruitmentSource: '',
   })
   const [cv, setCv] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState(null)
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
 
-  const handleSubmit = (e) => {
+  const experienceMap = {
+    'Sem experiencia': 0, '1 - 3 anos': 2, '3 - 5 anos': 4,
+    '5 - 10 anos': 7, 'Mais de 10 anos': 11,
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!cv) { setError('Por favor anexa o teu Currículo.'); return }
+
+    setLoading(true)
+    setError(null)
+
+    const data = new FormData()
+    if (job.id) data.append('vaga', job.id)
+    data.append('nomeCandidato', form.fullName)
+    data.append('email', form.email)
+    data.append('telefone', form.phone)
+    if (form.gender)          data.append('genero', form.gender)
+    if (form.location)        data.append('localizacao', form.location)
+    if (form.nationality)     data.append('nacionalidade', form.nationality)
+    if (form.birthDate)       data.append('dataNascimento', form.birthDate)
+    if (form.education)       data.append('habilitacoes', form.education)
+    if (form.experience)      data.append('experiencia', experienceMap[form.experience] ?? 0)
+    if (form.languages)       data.append('conhecimentoLinguas', form.languages)
+    if (form.itSkills)        data.append('conhecimentoInformatica', form.itSkills)
+    if (form.recruitmentSource) data.append('fonteRecrutamento', form.recruitmentSource)
+    data.append('cv', cv)
+
+    try {
+      const res = await fetch('https://app.autocrescente.com/api/rh/candidaturas', {
+        method: 'POST',
+        body: data,
+      })
+      if (!res.ok) throw new Error('Erro ao enviar candidatura.')
+      setSuccess(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -28,6 +69,20 @@ export default function ApplicationForm({ job, onClose }) {
           </button>
         </div>
 
+        {success ? (
+          <div className="px-5 sm:px-8 py-16 flex flex-col items-center text-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-7 h-7 text-green-500" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-[#1A3A8C]">Candidatura enviada!</h3>
+            <p className="text-gray-500 text-sm">Obrigado pelo teu interesse. Entraremos em contacto em breve.</p>
+            <button onClick={onClose} className="mt-2 bg-[#F07020] hover:bg-[#D05F10] text-white font-semibold px-8 py-3 rounded-lg transition-colors">
+              Fechar
+            </button>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="px-5 sm:px-8 py-8 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Nome Completo" required>
@@ -106,15 +161,20 @@ export default function ApplicationForm({ job, onClose }) {
             </label>
           </div>
 
+          {error && (
+            <p className="text-sm text-red-500 text-center">{error}</p>
+          )}
+
           <div className="pt-2 flex gap-3">
-            <button type="submit" className="flex-1 bg-[#F07020] hover:bg-[#D05F10] text-white font-semibold py-3.5 rounded-lg transition-colors">
-              Enviar Candidatura 
+            <button type="submit" disabled={loading} className="flex-1 bg-[#F07020] hover:bg-[#D05F10] disabled:opacity-60 text-white font-semibold py-3.5 rounded-lg transition-colors">
+              {loading ? 'A enviar...' : 'Enviar Candidatura'}
             </button>
             <button type="button" onClick={onClose} className="px-6 border border-gray-300 text-gray-600 hover:border-gray-400 font-medium py-3.5 rounded-lg transition-colors">
               Cancelar
             </button>
           </div>
         </form>
+        )}
       </div>
     </div>
   )
