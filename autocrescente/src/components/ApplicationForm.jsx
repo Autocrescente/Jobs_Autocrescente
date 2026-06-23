@@ -4,12 +4,13 @@ import { X, Upload } from 'lucide-react'
 export default function ApplicationForm({ job, onClose }) {
   const [form, setForm] = useState({
     fullName: '', gender: '', email: '', phone: '', location: '', nationality: '',
-    birthDate: '', education: '', experience: '', languages: '', itSkills: '', recruitmentSource: '',
+    birthDate: '', education: '', educationArea: '', experience: '', languages: '', itSkills: '', recruitmentSource: '',
   })
   const [cv, setCv] = useState(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState(null)
+  const [consent, setConsent] = useState(false)
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }))
 
@@ -34,7 +35,7 @@ export default function ApplicationForm({ job, onClose }) {
     if (form.location)        data.append('localizacao', form.location)
     if (form.nationality)     data.append('nacionalidade', form.nationality)
     if (form.birthDate)       data.append('dataNascimento', form.birthDate)
-    if (form.education)       data.append('habilitacoes', form.education)
+    if (form.education)       data.append('habilitacoes', form.educationArea ? `${form.education} - ${form.educationArea}` : form.education)
     if (form.experience)      data.append('experiencia', experienceMap[form.experience] ?? 0)
     if (form.languages)       data.append('conhecimentoLinguas', form.languages)
     if (form.itSkills)        data.append('conhecimentoInformatica', form.itSkills)
@@ -130,6 +131,11 @@ export default function ApplicationForm({ job, onClose }) {
                 <option>Doutoramento</option>
               </select>
             </Field>
+            {form.education && form.education !== 'Ensino Básico' && (
+              <Field label="Área de Estudos">
+                <input type="text" value={form.educationArea} onChange={set('educationArea')} placeholder="Ex: Engenharia Informática, Gestão..." />
+              </Field>
+            )}
             <Field label="Fonte de Recrutamento">
               <select value={form.recruitmentSource} onChange={set('recruitmentSource')}>
                 <option value="">Selecionar</option>
@@ -161,12 +167,24 @@ export default function ApplicationForm({ job, onClose }) {
             </label>
           </div>
 
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={e => setConsent(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-[#F07020] flex-shrink-0 cursor-pointer"
+            />
+            <span className="text-sm text-gray-500">
+              Confirmo a utilização de dados.... 
+            </span>
+          </label>
+
           {error && (
             <p className="text-sm text-red-500 text-center">{error}</p>
           )}
 
           <div className="pt-2 flex gap-3">
-            <button type="submit" disabled={loading} className="flex-1 bg-[#F07020] hover:bg-[#D05F10] disabled:opacity-60 text-white font-semibold py-3.5 rounded-lg transition-colors">
+            <button type="submit" disabled={loading || !consent} className="flex-1 bg-[#F07020] hover:bg-[#D05F10] disabled:opacity-60 text-white font-semibold py-3.5 rounded-lg transition-colors">
               {loading ? 'A enviar...' : 'Enviar Candidatura'}
             </button>
             <button type="button" onClick={onClose} className="px-6 border border-gray-300 text-gray-600 hover:border-gray-400 font-medium py-3.5 rounded-lg transition-colors">

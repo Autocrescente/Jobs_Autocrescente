@@ -1,10 +1,11 @@
 import { MapPin, Briefcase, ArrowRight } from 'lucide-react'
 
-export default function JobCard({ job, onClick }) {
+export default function JobCard({ job, onClick, index = 0 }) {
   return (
     <article
       onClick={onClick}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col sm:flex-row group sm:h-72 cursor-pointer"
+      className="animate-fade-up bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col sm:flex-row group sm:h-72 cursor-pointer"
+      style={{ animationDelay: `${index * 100}ms` }}
     >
 
       {/* Image */}

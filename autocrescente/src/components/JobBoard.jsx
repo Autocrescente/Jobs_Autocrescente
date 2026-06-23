@@ -53,8 +53,8 @@ export default function JobBoard({ onSelectJob }) {
 
         {!loading && !error && (
           <div className="flex flex-col gap-4">
-            {jobs.map(job => (
-              <JobCard key={job.id} job={job} onClick={() => onSelectJob(job)} />
+            {jobs.map((job, i) => (
+              <JobCard key={job.id} job={job} onClick={() => onSelectJob(job)} index={i} />
             ))}
           </div>
         )}
