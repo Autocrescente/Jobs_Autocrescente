@@ -1,10 +1,11 @@
 import { useState, cloneElement } from 'react'
 import { X, Upload } from 'lucide-react'
+import { companies } from '../companies'
 
 export default function ApplicationForm({ job, onClose }) {
   const [form, setForm] = useState({
     fullName: '', gender: '', email: '', phone: '', location: '', nationality: '',
-    birthDate: '', education: '', educationArea: '', experience: '', languages: '', itSkills: '', recruitmentSource: '',
+    birthDate: '', education: '', educationArea: '', experience: '', languages: '', itSkills: '', recruitmentSource: '', company: '',
   })
   const [cv, setCv] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -39,7 +40,9 @@ export default function ApplicationForm({ job, onClose }) {
     if (form.experience)      data.append('experiencia', experienceMap[form.experience] ?? 0)
     if (form.languages)       data.append('conhecimentoLinguas', form.languages)
     if (form.itSkills)        data.append('conhecimentoInformatica', form.itSkills)
-    if (form.recruitmentSource) data.append('fonteRecrutamento', form.recruitmentSource)
+    const fonte = form.recruitmentSource === 'Outros' ? (form.recruitmentSourceOther || 'Outros') : form.recruitmentSource
+    if (fonte) data.append('fonteRecrutamento', fonte)
+    if (!job.id && form.company) data.append('empresa', form.company)
     data.append('cv', cv)
 
     try {
@@ -86,6 +89,18 @@ export default function ApplicationForm({ job, onClose }) {
         ) : (
         <form onSubmit={handleSubmit} className="px-5 sm:px-8 py-8 space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {!job.id && (
+              <Field label="Empresa" required>
+                <select value={form.company} onChange={set('company')} required>
+                  <option value="">Selecionar</option>
+                  <option>Todas as empresas</option>
+                  <option>Estágio</option>
+                  {companies.map(c => (
+                    <option key={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </Field>
+            )}
             <Field label="Nome Completo" required>
               <input type="text" value={form.fullName} onChange={set('fullName')} required placeholder="João Silva" />
             </Field>
@@ -141,9 +156,21 @@ export default function ApplicationForm({ job, onClose }) {
                 <option value="">Selecionar</option>
                 <option>Website</option>
                 <option>LinkedIn</option>
-                <option>Redes Sociais</option>
+                <option>Facebook</option>
+                <option>Instagram</option>
+                <option>Outros</option>
               </select>
             </Field>
+            {form.recruitmentSource === 'Outros' && (
+              <Field label="Qual a fonte?">
+                <input
+                  type="text"
+                  value={form.recruitmentSourceOther ?? ''}
+                  onChange={e => setForm(f => ({ ...f, recruitmentSourceOther: e.target.value }))}
+                  placeholder="Indica a fonte de recrutamento..."
+                />
+              </Field>
+            )}
           </div>
 
           <Field label="Línguas">
