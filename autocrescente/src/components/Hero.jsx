@@ -9,8 +9,8 @@ export default function Hero({ onBack }) {
 
   return (
     <section
-      className="relative text-white bg-cover bg-center"
-      style={{ backgroundImage: `url(${bannerBg})` }}
+      className="relative text-white bg-cover bg-center overflow-hidden"
+      style={{ backgroundImage: `url(${bannerBg})`, height: '562px' }}
     >
       {showForm && (
         <ApplicationForm
@@ -21,7 +21,7 @@ export default function Hero({ onBack }) {
 
       <div className="absolute inset-0 bg-gradient-to-r from-[#001970cc] via-[#00197066] to-transparent pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 min-h-[480px]">
+      <div className="relative h-full max-w-7xl mx-auto grid md:grid-cols-2">
         <div className="flex flex-col justify-center px-6 sm:px-12 py-16 sm:py-20">
           {onBack && (
             <button

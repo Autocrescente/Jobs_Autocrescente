@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import LandingHero from './components/LandingHero'
 import CompanyGrid from './components/CompanyGrid'
+import MissionSection from './components/MissionSection'
 import CompanyDetail from './components/CompanyDetail'
 import Hero from './components/Hero'
 import JobBoard from './components/JobBoard'
@@ -38,6 +39,7 @@ export default function App() {
     <div className="min-h-screen font-sans bg-white">
       <LandingHero onGoToJobs={() => setPage('jobs')} />
       <CompanyGrid onSelectCompany={setSelectedCompany} />
+      <MissionSection />
     </div>
   )
 }
